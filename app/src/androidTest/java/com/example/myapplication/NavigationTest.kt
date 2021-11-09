@@ -4,11 +4,13 @@ import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.myapplication.OrientationChangeAction.Companion.orientationLandscape
+import com.example.myapplication.OrientationChangeAction.Companion.orientationPortrait
 import junit.framework.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -131,6 +133,15 @@ class NavigationTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
+    @Test
+    fun rotateFirst() {
+        launchActivity<MainActivity>()
+        Espresso.onView(isRoot()).perform(orientationLandscape());
+        Espresso.onView(ViewMatchers.withId(R.id.activity_main))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
 
     @Test
     fun rotateSec() {
@@ -162,6 +173,9 @@ class NavigationTest {
         Espresso.onView(isRoot()).perform(orientationLandscape());
         Espresso.onView(ViewMatchers.withId(R.id.activity_about))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
 
@@ -181,5 +195,95 @@ class NavigationTest {
         Espresso.pressBackUnconditionally()
         assertTrue(mActivityTestRule.activity.isDestroyed)
     }
-    
+
+    @Test
+    fun backCloseStackCheck2() {
+        launchActivity<MainActivity>()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBackUnconditionally()
+        assertTrue(mActivityTestRule.activity.isDestroyed)
+    }
+
+    @Test
+    fun backCloseStackCheck3() {
+        launchActivity<MainActivity>()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBackUnconditionally()
+        assertTrue(mActivityTestRule.activity.isDestroyed)
+    }
+
+    @Test
+    fun backCloseStackRotationCheck() {
+        launchActivity<MainActivity>()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.onView(isRoot()).perform(orientationLandscape());
+        Espresso.onView(ViewMatchers.withId(R.id.fragment3))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(isRoot()).perform(orientationPortrait())
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun fewAbout() {
+        launchActivity<MainActivity>()
+        openAbout()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        openAbout()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        openAbout()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment3))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun wrongTrans(){
+        launchActivity<MainActivity>()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
+        openAbout()
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
+    }
 }
