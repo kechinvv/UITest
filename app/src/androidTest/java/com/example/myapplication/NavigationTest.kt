@@ -17,8 +17,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-
-
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -29,7 +27,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NavigationTest {
     @get:Rule
-    val mActivityTestRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
+    val mActivityTestRule: ActivityTestRule<MainActivity> =
+        ActivityTestRule(MainActivity::class.java)
 
     @Test
     fun testAbout() {
@@ -179,12 +178,6 @@ class NavigationTest {
     }
 
 
-    @Test
-    fun backClose() {
-        launchActivity<MainActivity>()
-        Espresso.pressBackUnconditionally()
-        assertTrue(mActivityTestRule.activity.isDestroyed)
-    }
 
     @Test
     fun backCloseStackCheck() {
@@ -197,36 +190,36 @@ class NavigationTest {
     }
 
     @Test
-    fun backCloseStackCheck2() {
+    fun upStackCheck() {
         launchActivity<MainActivity>()
         Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.fragment1))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.pressBackUnconditionally()
-        assertTrue(mActivityTestRule.activity.isDestroyed)
+        Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
+            .check(doesNotExist())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        openAbout()
+        Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
+            .perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.fragment3))
+        Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
+            .perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
+        Espresso.pressBack()
+        Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
+            .perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
-    @Test
-    fun backCloseStackCheck3() {
-        launchActivity<MainActivity>()
-        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
-        Espresso.pressBack()
-        Espresso.onView(ViewMatchers.withId(R.id.fragment2))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.pressBack()
-        Espresso.onView(ViewMatchers.withId(R.id.fragment1))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.pressBackUnconditionally()
-        assertTrue(mActivityTestRule.activity.isDestroyed)
-    }
 
     @Test
     fun backCloseStackRotationCheck() {
@@ -272,18 +265,5 @@ class NavigationTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
-    @Test
-    fun wrongTrans(){
-        launchActivity<MainActivity>()
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).check(doesNotExist())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
-        openAbout()
-        Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).check(doesNotExist())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).check(doesNotExist())
-        Espresso.onView(ViewMatchers.withId(R.id.bnToFirst)).check(doesNotExist())
-    }
+
 }
