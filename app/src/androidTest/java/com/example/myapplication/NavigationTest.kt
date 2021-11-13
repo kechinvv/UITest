@@ -136,8 +136,6 @@ class NavigationTest {
     fun rotateFirst() {
         launchActivity<MainActivity>()
         Espresso.onView(isRoot()).perform(orientationLandscape());
-        Espresso.onView(ViewMatchers.withId(R.id.activity_main))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment1))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
@@ -147,8 +145,6 @@ class NavigationTest {
         launchActivity<MainActivity>()
         Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
         Espresso.onView(isRoot()).perform(orientationLandscape());
-        Espresso.onView(ViewMatchers.withId(R.id.activity_main))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment2))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
@@ -159,8 +155,6 @@ class NavigationTest {
         Espresso.onView(ViewMatchers.withId(R.id.bnToSecond)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.bnToThird)).perform(ViewActions.click())
         Espresso.onView(isRoot()).perform(orientationLandscape());
-        Espresso.onView(ViewMatchers.withId(R.id.activity_main))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment3))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
@@ -207,7 +201,6 @@ class NavigationTest {
         openAbout()
         Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
             .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.fragment3))
         Espresso.onView(ViewMatchers.withContentDescription(R.string.nav_app_bar_navigate_up_description))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.fragment2))
